@@ -6,6 +6,7 @@ After=network.target
 [Service]
 Type=notify-reload
 ExecStart=/usr/local/sbin/postsrsd -C /etc/postsrsd.conf
+ExecStartPost=+/usr/bin/chown postfix:postfix /var/spool/postfix/private/srs /var/spool/postfix/private/srs.lock
 
 CapabilityBoundingSet=CAP_DAC_OVERRIDE CAP_NET_BIND_SERVICE CAP_SETGID CAP_SETUID CAP_SYS_CHROOT
 LockPersonality=yes

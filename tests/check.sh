@@ -68,6 +68,9 @@ grep -F 'srs-domain = "salyut.one"' "$config" >/dev/null
 grep -F 'socketmap = unix:/var/spool/postfix/private/srs' "$config" >/dev/null
 grep -F 'secrets-file = "/etc/postsrsd.secret"' "$config" >/dev/null
 grep -F 'ExecStart=/usr/local/sbin/postsrsd -C /etc/postsrsd.conf' "$unit" >/dev/null
+grep -F \
+	'ExecStartPost=+/usr/bin/chown postfix:postfix /var/spool/postfix/private/srs /var/spool/postfix/private/srs.lock' \
+	"$unit" >/dev/null
 grep -F 'NoNewPrivileges=yes' "$unit" >/dev/null
 grep -F \
 	'ReadWritePaths=/var/spool/postfix/private /var/lib/postsrsd' \
