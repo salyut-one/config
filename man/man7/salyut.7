@@ -1,0 +1,157 @@
+.TH SALYUT 7 "2026-07-19" "salyut.one" "Miscellaneous Information Manual"
+.SH NAME
+salyut \- introduction to the salyut.one pubnix
+.SH DESCRIPTION
+.B salyut.one
+is an all-purpose, small, tilde-adjacent pubnix running Fedora 44.
+An account includes shell access, local and Internet e-mail, static web
+hosting, Unix user lookup, and access to the Bulletin Board System.
+.PP
+This page is the starting point for those services.
+Service announcements and maintenance notices are published on the
+.B Updates
+board in the BBS.
+.SH SHELL ACCESS
+Connect using the Unix username and SSH key registered for the account:
+.PP
+.RS
+.EX
+ssh username@salyut.one
+.EE
+.RE
+.PP
+Normal Unix manual pages are available with
+.BR man (1).
+For help with a command, try
+.B man
+followed by its name.
+.SH COMMUNICATION
+Use
+.BR write (1)
+to talk to another logged-in user:
+.PP
+.RS
+.EX
+write username
+.EE
+.RE
+.PP
+Use
+.BR mesg (1)
+to allow or reject incoming
+.B write
+requests.
+Local e-mail remains available when the recipient is offline.
+.SH E-MAIL
+Every user has an e-mail address at
+.IR username@salyut.one .
+Run
+.BR neomutt (1)
+to read and send mail from the shell, or configure a personal mail client
+using the account details supplied when the account was created.
+.PP
+To redirect new mail to another address, create
+.I ~/.forward
+containing the destination:
+.PP
+.RS
+.EX
+you@example.net
+.EE
+.RE
+.PP
+To keep a local copy as well, list the local username with a leading
+backslash, followed by the destination:
+.PP
+.RS
+.EX
+\\username, you@example.net
+.EE
+.RE
+.PP
+Replace
+.I username
+with the account's Unix username.
+The file must be owned by the account and must not be writable by other users.
+Run
+.B chmod 600 ~/.forward
+after editing it.
+Remove
+.I ~/.forward
+to stop forwarding.
+.SH STATIC WEB HOSTING
+Files in the account's
+.I public_html
+directory are published at:
+.PP
+.RS
+.EX
+https://salyut.one/~username/
+.EE
+.RE
+.PP
+The public user directory is available at
+.UR https://salyut.one/users
+.UE .
+.SH USER LOOKUP
+View compact information about a local Unix user with:
+.PP
+.RS
+.EX
+pinky -lb username
+.EE
+.RE
+.PP
+The read-only web view is available at
+.UR https://salyut.one/now
+.UE .
+.SH BULLETIN BOARD SYSTEM
+Run
+.B bbs
+to read and post from the terminal.
+The BBS contains General discussion, service Updates, and Proposals about
+changes to salyut.one.
+.PP
+Use the bracket keys to change boards,
+.B j
+and
+.B k
+to move, and Enter to read.
+Press
+.B n
+to create a thread,
+.B a
+to reply, and
+.B v
+while reading a proposal to vote.
+The client displays its complete key reference in the interface.
+.PP
+A read-only web view is available at
+.UR https://salyut.one/bbs
+.UE .
+.SH GOVERNANCE
+salyut.one is almost entirely community-governed.
+Every user may submit, support, oppose, and vote on changes through the
+.B Proposals
+board.
+Votes are authoritative: a proposal passes when votes in favour exceed half
+of the votes cast for or against.
+Abstentions do not count toward that comparison.
+.PP
+The operator may veto a proposal only when it would jeopardise security,
+violate applicable law, exceed available resources, threaten availability,
+act in bad faith, or transfer ownership or veto powers.
+The full current policy is published at
+.UR https://salyut.one/
+.UE .
+.SH SUPPORT
+Ask other users on the BBS, or e-mail the operator at
+.UR mailto:root@salyut.one
+root@salyut.one
+.UE .
+.SH SEE ALSO
+.BR man (1),
+.BR mesg (1),
+.BR neomutt (1),
+.BR ssh (1),
+.BR write (1)

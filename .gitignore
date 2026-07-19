@@ -1,0 +1,9 @@
+.DS_Store
+/build/
+/dist/
+/selinux/*.cil
+/selinux/*.mod
+/selinux/*.pp
+/selinux/tmp/
+*.o
+*.so

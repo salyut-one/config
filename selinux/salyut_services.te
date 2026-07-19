@@ -1,0 +1,51 @@
+policy_module(salyut_services, 1.1.0)
+
+########################################
+# Domain and executable types
+
+type salyut_site_t;
+type salyut_site_exec_t;
+init_daemon_domain(salyut_site_t, salyut_site_exec_t)
+
+type salyut_bbsd_t;
+type salyut_bbsd_exec_t;
+init_daemon_domain(salyut_bbsd_t, salyut_bbsd_exec_t)
+
+########################################
+# Private BBS state and runtime objects
+
+type salyut_bbsd_state_t;
+files_type(salyut_bbsd_state_t)
+
+type salyut_bbsd_var_run_t;
+files_pid_file(salyut_bbsd_var_run_t)
+
+type salyut_now_profile_t;
+files_type(salyut_now_profile_t)
+
+########################################
+# Site: passwd lookups and the one loopback HTTP listener on TCP/8082.
+
+auth_read_passwd_file(salyut_site_t)
+corecmd_exec_bin(salyut_site_t)
+allow salyut_site_t self:tcp_socket { accept bind create getattr listen read setopt shutdown write };
+corenet_tcp_bind_generic_node(salyut_site_t)
+corenet_tcp_bind_us_cli_port(salyut_site_t)
+allow salyut_site_t salyut_bbsd_t:unix_stream_socket connectto;
+allow salyut_site_t salyut_bbsd_var_run_t:dir search;
+allow salyut_site_t salyut_bbsd_var_run_t:sock_file write;
+
+########################################
+# BBS daemon: private SQLite state, its local Unix socket, and the
+# NSS/userdb reads needed to derive Unix peer identities.
+
+auth_read_passwd_file(salyut_bbsd_t)
+systemd_homed_stream_connect(salyut_bbsd_t)
+systemd_manage_userdbd_runtime_sock_files(salyut_bbsd_t)
+systemd_userdbd_runtime_read_symlinks(salyut_bbsd_t)
+systemd_userdbd_stream_connect(salyut_bbsd_t)
+manage_dirs_pattern(salyut_bbsd_t, salyut_bbsd_state_t, salyut_bbsd_state_t)
+manage_files_pattern(salyut_bbsd_t, salyut_bbsd_state_t, salyut_bbsd_state_t)
+allow salyut_bbsd_t salyut_bbsd_state_t:file map;
+manage_dirs_pattern(salyut_bbsd_t, salyut_bbsd_var_run_t, salyut_bbsd_var_run_t)
+manage_sock_files_pattern(salyut_bbsd_t, salyut_bbsd_var_run_t, salyut_bbsd_var_run_t)
