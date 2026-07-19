@@ -32,6 +32,15 @@ elif command -v groff >/dev/null 2>&1; then
 	groff -T utf8 -man "$repo/man/man7/salyut.7" >/dev/null
 fi
 
+caddyfile="$tmp/etc/caddy/Caddyfile"
+test -f "$caddyfile"
+grep -F 'reverse_proxy 127.0.0.1:8082' "$caddyfile" >/dev/null
+grep -F 'redir https://salyut.one/bbs{uri} permanent' "$caddyfile" >/dev/null
+grep -F 'redir https://salyut.one/now{uri} permanent' "$caddyfile" >/dev/null
+if command -v caddy >/dev/null 2>&1; then
+	caddy validate --config "$caddyfile" --adapter caddyfile
+fi
+
 pam_file="$tmp/etc/pam.d/cockpit"
 test -f "$pam_file"
 test "$(stat -c '%a' "$pam_file" 2>/dev/null || stat -f '%Lp' "$pam_file")" = 644
@@ -79,6 +88,10 @@ do
 	grep -F "/usr/local/bin/$executable" "$contexts" >/dev/null
 done
 grep -F '/srv/user_profiles(/.*)?' "$contexts" >/dev/null
+grep -F 'userdom_search_user_home_dirs(salyut_site_t)' "$policy" >/dev/null
+grep -F 'userdom_read_user_home_content_symlinks(salyut_site_t)' "$policy" >/dev/null
+grep -F \
+	'read_files_pattern(salyut_site_t, salyut_now_profile_t, salyut_now_profile_t)' "$policy" >/dev/null
 if grep -Eiq '(^|[[:space:]])permissive([[:space:]]|$)' "$policy"; then
 	echo "policy must not contain a permissive declaration" >&2
 	exit 1

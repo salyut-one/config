@@ -3,6 +3,7 @@ INSTALL ?= install
 PREFIX ?= /usr/local
 SYSCONFDIR ?= /etc
 MANDIR ?= $(PREFIX)/share/man
+CADDY_DIR ?= $(SYSCONFDIR)/caddy
 MOTDDIR ?= $(SYSCONFDIR)/motd.d
 PAM_DIR ?= $(SYSCONFDIR)/pam.d
 PAM_MODULE_DIR ?= /usr/lib64/security
@@ -31,7 +32,7 @@ POSTSRSD_BUILD = build/postsrsd-cmake
 
 .PHONY: all build build-selinux build-mail build-session-privacy \
 	test check install install-config install-manpage install-cockpit \
-	install-selinux-dropins install-selinux install-mail-config install-mail \
+	install-caddy install-selinux-dropins install-selinux install-mail-config install-mail \
 	install-session-privacy clean
 
 all: build
@@ -94,7 +95,7 @@ check: test
 	fi
 
 install-config: install-manpage install-cockpit install-selinux-dropins \
-	install-mail-config
+	install-caddy install-mail-config
 
 install-manpage:
 	$(INSTALL) -d "$(DESTDIR)$(MANDIR)/man7"
@@ -111,6 +112,11 @@ install-cockpit:
 	$(INSTALL) -d "$(DESTDIR)$(PAM_DIR)"
 	$(INSTALL) -m 0644 etc/pam.d/cockpit \
 		"$(DESTDIR)$(PAM_DIR)/cockpit"
+
+install-caddy:
+	$(INSTALL) -d "$(DESTDIR)$(CADDY_DIR)"
+	$(INSTALL) -m 0644 etc/caddy/Caddyfile \
+		"$(DESTDIR)$(CADDY_DIR)/Caddyfile"
 
 install-selinux-dropins:
 	@for service in $(SERVICES); do \

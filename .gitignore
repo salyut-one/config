@@ -2,6 +2,7 @@
 /build/
 /dist/
 /selinux/*.cil
+/selinux/*.if
 /selinux/*.mod
 /selinux/*.pp
 /selinux/tmp/

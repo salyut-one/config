@@ -27,7 +27,11 @@ files_type(salyut_now_profile_t)
 # Site: passwd lookups and the one loopback HTTP listener on TCP/8082.
 
 auth_read_passwd_file(salyut_site_t)
+files_search_var(salyut_site_t)
 corecmd_exec_bin(salyut_site_t)
+userdom_search_user_home_dirs(salyut_site_t)
+userdom_read_user_home_content_symlinks(salyut_site_t)
+read_files_pattern(salyut_site_t, salyut_now_profile_t, salyut_now_profile_t)
 allow salyut_site_t self:tcp_socket { accept bind create getattr listen read setopt shutdown write };
 corenet_tcp_bind_generic_node(salyut_site_t)
 corenet_tcp_bind_us_cli_port(salyut_site_t)

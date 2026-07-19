@@ -1,0 +1,63 @@
+{
+	admin unix//run/caddy/admin.sock
+	servers {
+		strict_sni_host on
+	}
+}
+
+(common_security) {
+	header {
+		>Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		>X-Content-Type-Options "nosniff"
+		>Referrer-Policy "no-referrer"
+	}
+
+	@security_txt path /.well-known/security.txt
+	handle @security_txt {
+		root * /etc/caddy
+		rewrite * /security.txt
+		file_server
+	}
+}
+
+salyut.one {
+	import common_security
+
+	@bbs path /bbs /bbs/*
+	header @bbs >Content-Security-Policy "default-src 'none'; style-src 'self' 'unsafe-inline'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'"
+
+	@user_root path_regexp user_root ^/~([A-Za-z0-9_][A-Za-z0-9_.-]*)$
+
+	@user_site path_regexp user_site ^/~([A-Za-z0-9_][A-Za-z0-9_.-]*)/.*$
+	handle @user_site {
+		root * /srv/user_sites/{re.user_site.1}
+		uri strip_prefix /~{re.user_site.1}
+		file_server
+	}
+
+	reverse_proxy 127.0.0.1:8082
+}
+
+bbs.salyut.one {
+	import common_security
+	redir https://salyut.one/bbs{uri} permanent
+}
+
+now.salyut.one {
+	import common_security
+	redir https://salyut.one/now{uri} permanent
+}
+
+cockpit.salyut.one {
+	import common_security
+	reverse_proxy 127.0.0.1:9090
+}
+
+mail.salyut.one {
+	import common_security
+	respond "Mail server" 200
+}
+
+http:// {
+	respond 421
+}

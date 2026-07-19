@@ -1,9 +1,9 @@
 # salyut-config
 
 Host configuration for https://salyut.one. It owns the SELinux policy, system
-manual and login message, Cockpit access policy, PostSRSd mail forwarding
-configuration, and the PAM module that removes SSH client addresses from
-public session data.
+manual and login message, Caddy routing, Cockpit access policy, PostSRSd mail
+forwarding configuration, and the PAM module that removes SSH client addresses
+from public session data.
 
 ## Build and test
 
