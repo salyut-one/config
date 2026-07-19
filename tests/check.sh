@@ -65,10 +65,13 @@ test -f "$unit"
 test -f "$sysusers"
 grep -F 'domains = { "salyut.one", "mail.salyut.one" }' "$config" >/dev/null
 grep -F 'srs-domain = "salyut.one"' "$config" >/dev/null
-grep -F 'socketmap = unix:/var/spool/postfix/srs' "$config" >/dev/null
+grep -F 'socketmap = unix:/var/spool/postfix/private/srs' "$config" >/dev/null
 grep -F 'secrets-file = "/etc/postsrsd.secret"' "$config" >/dev/null
 grep -F 'ExecStart=/usr/local/sbin/postsrsd -C /etc/postsrsd.conf' "$unit" >/dev/null
 grep -F 'NoNewPrivileges=yes' "$unit" >/dev/null
+grep -F \
+	'ReadWritePaths=/var/spool/postfix/private /var/lib/postsrsd' \
+	"$unit" >/dev/null
 grep -F 'u postsrsd ' "$sysusers" >/dev/null
 if find "$repo" -type f -name '*.secret' | grep . >/dev/null; then
 	echo "PostSRSd secret committed to the repository" >&2
@@ -92,6 +95,8 @@ grep -F 'userdom_search_user_home_dirs(salyut_site_t)' "$policy" >/dev/null
 grep -F 'userdom_read_user_home_content_symlinks(salyut_site_t)' "$policy" >/dev/null
 grep -F \
 	'read_files_pattern(salyut_site_t, salyut_now_profile_t, salyut_now_profile_t)' "$policy" >/dev/null
+grep -F \
+	'allow postfix_cleanup_t unconfined_service_t:unix_stream_socket connectto;' "$policy" >/dev/null
 if grep -Eiq '(^|[[:space:]])permissive([[:space:]]|$)' "$policy"; then
 	echo "policy must not contain a permissive declaration" >&2
 	exit 1

@@ -71,7 +71,7 @@ wait_for_mail "$source_home"
 wait_for_mail "$target_home"
 
 rewritten=$(postmap -q smoke@example.net \
-	'socketmap:unix:/var/spool/postfix/srs:forward')
+	'socketmap:unix:/var/spool/postfix/private/srs:forward')
 case "$rewritten" in
 	SRS0*@salyut.one) ;;
 	*)
@@ -81,7 +81,7 @@ case "$rewritten" in
 esac
 
 reversed=$(postmap -q "$rewritten" \
-	'socketmap:unix:/var/spool/postfix/srs:reverse')
+	'socketmap:unix:/var/spool/postfix/private/srs:reverse')
 if [ "$reversed" != "smoke@example.net" ]; then
 	echo "SRS reverse lookup returned: $reversed" >&2
 	exit 1

@@ -152,11 +152,11 @@ install-mail: build-mail install-mail-config
 			openssl rand -base64 32 >"$(SYSCONFDIR)/postsrsd.secret"; \
 		fi; \
 		postconf -e \
-			'sender_canonical_maps = socketmap:unix:srs:forward'; \
+			'sender_canonical_maps = socketmap:unix:private/srs:forward'; \
 		postconf -e \
 			'sender_canonical_classes = envelope_sender'; \
 		postconf -e \
-			'recipient_canonical_maps = socketmap:unix:srs:reverse'; \
+			'recipient_canonical_maps = socketmap:unix:private/srs:reverse'; \
 		postconf -e \
 			'recipient_canonical_classes = envelope_recipient, header_recipient'; \
 		postfix check; \

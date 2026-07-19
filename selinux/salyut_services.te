@@ -3,6 +3,11 @@ policy_module(salyut_services, 1.1.0)
 ########################################
 # Domain and executable types
 
+gen_require(`
+	type postfix_cleanup_t;
+	type unconfined_service_t;
+')
+
 type salyut_site_t;
 type salyut_site_exec_t;
 init_daemon_domain(salyut_site_t, salyut_site_exec_t)
@@ -38,6 +43,11 @@ corenet_tcp_bind_us_cli_port(salyut_site_t)
 allow salyut_site_t salyut_bbsd_t:unix_stream_socket connectto;
 allow salyut_site_t salyut_bbsd_var_run_t:dir search;
 allow salyut_site_t salyut_bbsd_var_run_t:sock_file write;
+
+########################################
+# Postfix cleanup may connect to PostSRSd through its private socket.
+
+allow postfix_cleanup_t unconfined_service_t:unix_stream_socket connectto;
 
 ########################################
 # BBS daemon: private SQLite state, its local Unix socket, and the
