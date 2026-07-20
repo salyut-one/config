@@ -1,4 +1,4 @@
-.TH SALYUT 7 "2026-07-19" "salyut.one" "Miscellaneous Information Manual"
+.TH SALYUT 7 "2026-07-20" "salyut.one" "Miscellaneous Information Manual"
 .SH NAME
 salyut \- introduction to the salyut.one pubnix
 .SH DESCRIPTION
@@ -125,6 +125,18 @@ to reply, and
 .B v
 while reading a proposal to vote.
 The client displays its complete key reference in the interface.
+.PP
+Create a General or Updates thread by sending a plain-text message to
+.I general@bbs.salyut.one
+or
+.IR updates@bbs.salyut.one .
+When using the Salyut outgoing server, authenticate with the Unix account.
+Mail sent through another provider is attributed to the one eligible Unix
+account whose
+.I ~/.forward
+contains the exact sender address, and is accepted only when that provider
+adds a passing DKIM signature aligned with the sender's domain.
+The normal board permissions still apply.
 .PP
 A read-only web view is available at
 .UR https://salyut.one/bbs

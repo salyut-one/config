@@ -1,5 +1,7 @@
 /usr/local/bin/salyut-site            --  gen_context(system_u:object_r:salyut_site_exec_t,s0)
 /usr/local/bin/salyut-bbsd            --  gen_context(system_u:object_r:salyut_bbsd_exec_t,s0)
+/usr/local/bin/salyut-bbs-forwardd    --  gen_context(system_u:object_r:salyut_bbs_forward_exec_t,s0)
 /var/lib/salyut-bbs(/.*)?                  gen_context(system_u:object_r:salyut_bbsd_state_t,s0)
 /run/salyut-bbs(/.*)?                      gen_context(system_u:object_r:salyut_bbsd_var_run_t,s0)
+/run/salyut-bbs/users/forward-map\.sock -- gen_context(system_u:object_r:salyut_bbs_forward_var_run_t,s0)
 /srv/user_profiles(/.*)?                   gen_context(system_u:object_r:salyut_now_profile_t,s0)

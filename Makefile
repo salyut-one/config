@@ -1,6 +1,8 @@
 CC ?= cc
 INSTALL ?= install
+OPENDKIM ?= opendkim
 SEMODULE ?= semodule
+SYSTEMCTL ?= systemctl
 PREFIX ?= /usr/local
 SYSCONFDIR ?= /etc
 MANDIR ?= $(PREFIX)/share/man
@@ -15,7 +17,7 @@ SELINUX_PACKAGE_DIR ?= /usr/share/selinux/packages
 
 SELINUX_MODULE = salyut_services
 SELINUX_PACKAGE = selinux/$(SELINUX_MODULE).pp
-SERVICES = salyut-site salyut-bbsd
+SERVICES = salyut-site salyut-bbsd salyut-bbs-forward-map
 
 PAM_MODULE = pam_salyut_session_privacy.so
 PAM_TARGET = build/$(PAM_MODULE)
@@ -139,6 +141,8 @@ install-mail-config:
 	$(INSTALL) -d "$(DESTDIR)$(SYSCONFDIR)"
 	$(INSTALL) -m 0644 etc/postsrsd.conf \
 		"$(DESTDIR)$(SYSCONFDIR)/postsrsd.conf"
+	$(INSTALL) -m 0644 etc/opendkim.conf \
+		"$(DESTDIR)$(SYSCONFDIR)/opendkim.conf"
 	$(INSTALL) -d "$(DESTDIR)$(SYSTEMD_UNIT_DIR)"
 	$(INSTALL) -m 0644 etc/systemd/system/postsrsd.service \
 		"$(DESTDIR)$(SYSTEMD_UNIT_DIR)/postsrsd.service"
@@ -163,6 +167,8 @@ install-mail: build-mail install-mail-config
 			'recipient_canonical_maps = socketmap:unix:private/srs:reverse'; \
 		postconf -e \
 			'recipient_canonical_classes = envelope_recipient, header_recipient'; \
+		$(OPENDKIM) -n -x "$(SYSCONFDIR)/opendkim.conf"; \
+		$(SYSTEMCTL) restart opendkim.service; \
 		postfix check; \
 	fi
 

@@ -1,4 +1,4 @@
-policy_module(salyut_services, 1.2.1)
+policy_module(salyut_services, 1.3.0)
 
 ########################################
 # Domain and executable types
@@ -7,7 +7,9 @@ gen_require(`
 	type postfix_cleanup_t;
 	type postfix_pipe_t;
 	type postfix_smtpd_t;
+	type mail_home_t;
 	type unconfined_service_t;
+	type user_home_dir_t;
 ')
 
 type salyut_site_t;
@@ -18,6 +20,10 @@ type salyut_bbsd_t;
 type salyut_bbsd_exec_t;
 init_daemon_domain(salyut_bbsd_t, salyut_bbsd_exec_t)
 
+type salyut_bbs_forward_t;
+type salyut_bbs_forward_exec_t;
+init_daemon_domain(salyut_bbs_forward_t, salyut_bbs_forward_exec_t)
+
 ########################################
 # Private BBS state and runtime objects
 
@@ -26,6 +32,9 @@ files_type(salyut_bbsd_state_t)
 
 type salyut_bbsd_var_run_t;
 files_pid_file(salyut_bbsd_var_run_t)
+
+type salyut_bbs_forward_var_run_t;
+files_pid_file(salyut_bbs_forward_var_run_t)
 
 type salyut_now_profile_t;
 files_type(salyut_now_profile_t)
@@ -59,6 +68,28 @@ allow postfix_smtpd_t unconfined_service_t:unix_stream_socket connectto;
 allow postfix_pipe_t salyut_bbsd_t:unix_stream_socket connectto;
 allow postfix_pipe_t salyut_bbsd_var_run_t:dir search;
 allow postfix_pipe_t salyut_bbsd_var_run_t:sock_file write;
+allow postfix_pipe_t salyut_bbs_forward_t:unix_stream_socket connectto;
+allow postfix_pipe_t salyut_bbs_forward_var_run_t:sock_file write;
+
+########################################
+# The forwarding-address resolver may read only passwd metadata and the
+# dedicated SELinux type used for safe ~/.forward files. CAP_DAC_READ_SEARCH
+# crosses private home-directory modes without granting access to other home
+# content, and the helper owns only its distinct runtime socket type.
+
+auth_read_passwd_file(salyut_bbs_forward_t)
+userdom_search_user_home_dirs(salyut_bbs_forward_t)
+allow salyut_bbs_forward_t user_home_dir_t:dir { getattr open read search };
+allow salyut_bbs_forward_t mail_home_t:file { getattr open read };
+allow salyut_bbs_forward_t self:capability dac_read_search;
+allow salyut_bbs_forward_t self:unix_stream_socket {
+	accept bind create getattr getopt listen read setopt shutdown write
+};
+manage_sock_files_pattern(
+	salyut_bbs_forward_t,
+	salyut_bbsd_var_run_t,
+	salyut_bbs_forward_var_run_t
+)
 
 ########################################
 # BBS daemon: private SQLite state, its local Unix socket, and the

@@ -22,6 +22,8 @@ grep -F 'Run man salyut.' "$motd" >/dev/null
 grep -F '.TH SALYUT 7' "$manual" >/dev/null
 grep -F 'pinky -lb username' "$manual" >/dev/null
 grep -F 'https://salyut.one/bbs' "$manual" >/dev/null
+grep -F 'general@bbs.salyut.one' "$manual" >/dev/null
+grep -F 'passing DKIM signature' "$manual" >/dev/null
 grep -F '.I ~/.forward' "$manual" >/dev/null
 grep -F '\\username, you@example.net' "$manual" >/dev/null
 
@@ -58,9 +60,11 @@ if grep -F 'file=/etc/cockpit/allowed-users' "$pam_file" >/dev/null; then
 fi
 
 config="$tmp/etc/postsrsd.conf"
+opendkim="$tmp/etc/opendkim.conf"
 unit="$tmp/etc/systemd/system/postsrsd.service"
 sysusers="$tmp/etc/sysusers.d/postsrsd.conf"
 test -f "$config"
+test -f "$opendkim"
 test -f "$unit"
 test -f "$sysusers"
 grep -F 'domains = { "salyut.one", "mail.salyut.one" }' "$config" >/dev/null
@@ -76,6 +80,10 @@ grep -F \
 	'ReadWritePaths=/var/spool/postfix/private /var/lib/postsrsd' \
 	"$unit" >/dev/null
 grep -F 'u postsrsd ' "$sysusers" >/dev/null
+grep -F 'Mode                    sv' "$opendkim" >/dev/null
+grep -F 'AuthservID              mail.salyut.one' "$opendkim" >/dev/null
+grep -F 'RemoveARFrom            mail.salyut.one' "$opendkim" >/dev/null
+grep -F 'RemoveARAll             yes' "$opendkim" >/dev/null
 if find "$repo" -type f -name '*.secret' | grep . >/dev/null; then
 	echo "PostSRSd secret committed to the repository" >&2
 	exit 1
@@ -84,12 +92,12 @@ fi
 policy="$repo/selinux/salyut_services.te"
 contexts="$repo/selinux/salyut_services.fc"
 grep -F 'policy_module(salyut_services,' "$policy" >/dev/null
-for domain in salyut_site salyut_bbsd
+for domain in salyut_site salyut_bbsd salyut_bbs_forward
 do
 	grep -F "init_daemon_domain(${domain}_t, ${domain}_exec_t)" \
 		"$policy" >/dev/null
 done
-for executable in salyut-site salyut-bbsd
+for executable in salyut-site salyut-bbsd salyut-bbs-forwardd
 do
 	grep -F "/usr/local/bin/$executable" "$contexts" >/dev/null
 done
@@ -108,6 +116,14 @@ grep -F \
 	'allow postfix_pipe_t salyut_bbsd_var_run_t:dir search;' "$policy" >/dev/null
 grep -F \
 	'allow postfix_pipe_t salyut_bbsd_var_run_t:sock_file write;' "$policy" >/dev/null
+grep -F \
+	'allow postfix_pipe_t salyut_bbs_forward_t:unix_stream_socket connectto;' "$policy" >/dev/null
+grep -F \
+	'allow postfix_pipe_t salyut_bbs_forward_var_run_t:sock_file write;' "$policy" >/dev/null
+grep -F \
+	'allow salyut_bbs_forward_t mail_home_t:file { getattr open read };' "$policy" >/dev/null
+grep -F \
+	'allow salyut_bbs_forward_t self:capability dac_read_search;' "$policy" >/dev/null
 grep -F 'SEMODULE ?= semodule' "$repo/Makefile" >/dev/null
 grep -F \
 	'if [ -z "$(DESTDIR)" ]; then \' "$repo/Makefile" >/dev/null
