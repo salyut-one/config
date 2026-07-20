@@ -124,6 +124,7 @@ grep -F \
 	'allow salyut_bbs_forward_t mail_home_t:file { getattr open read };' "$policy" >/dev/null
 grep -F \
 	'allow salyut_bbs_forward_t self:capability dac_read_search;' "$policy" >/dev/null
+grep -F '"forward-map.sock"' "$policy" >/dev/null
 grep -F 'SEMODULE ?= semodule' "$repo/Makefile" >/dev/null
 grep -F \
 	'if [ -z "$(DESTDIR)" ]; then \' "$repo/Makefile" >/dev/null
