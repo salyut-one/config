@@ -101,6 +101,8 @@ grep -F \
 grep -F \
 	'allow postfix_cleanup_t unconfined_service_t:unix_stream_socket connectto;' "$policy" >/dev/null
 grep -F \
+	'allow postfix_smtpd_t unconfined_service_t:unix_stream_socket connectto;' "$policy" >/dev/null
+grep -F \
 	'allow postfix_pipe_t salyut_bbsd_t:unix_stream_socket connectto;' "$policy" >/dev/null
 grep -F \
 	'allow postfix_pipe_t salyut_bbsd_var_run_t:dir search;' "$policy" >/dev/null
