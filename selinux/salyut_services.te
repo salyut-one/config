@@ -1,10 +1,11 @@
-policy_module(salyut_services, 1.1.0)
+policy_module(salyut_services, 1.2.0)
 
 ########################################
 # Domain and executable types
 
 gen_require(`
 	type postfix_cleanup_t;
+	type postfix_pipe_t;
 	type unconfined_service_t;
 ')
 
@@ -48,6 +49,13 @@ allow salyut_site_t salyut_bbsd_var_run_t:sock_file write;
 # Postfix cleanup may connect to PostSRSd through its private socket.
 
 allow postfix_cleanup_t unconfined_service_t:unix_stream_socket connectto;
+
+# The local-only BBS transport executes salyut-bbs-mail under postfix_pipe_t.
+# It may reach only the daemon's labeled Unix socket; the daemon still
+# authenticates the dedicated bridge UID and owns all database mutations.
+allow postfix_pipe_t salyut_bbsd_t:unix_stream_socket connectto;
+allow postfix_pipe_t salyut_bbsd_var_run_t:dir search;
+allow postfix_pipe_t salyut_bbsd_var_run_t:sock_file write;
 
 ########################################
 # BBS daemon: private SQLite state, its local Unix socket, and the

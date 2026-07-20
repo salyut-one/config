@@ -100,6 +100,12 @@ grep -F \
 	'read_files_pattern(salyut_site_t, salyut_now_profile_t, salyut_now_profile_t)' "$policy" >/dev/null
 grep -F \
 	'allow postfix_cleanup_t unconfined_service_t:unix_stream_socket connectto;' "$policy" >/dev/null
+grep -F \
+	'allow postfix_pipe_t salyut_bbsd_t:unix_stream_socket connectto;' "$policy" >/dev/null
+grep -F \
+	'allow postfix_pipe_t salyut_bbsd_var_run_t:dir search;' "$policy" >/dev/null
+grep -F \
+	'allow postfix_pipe_t salyut_bbsd_var_run_t:sock_file write;' "$policy" >/dev/null
 if grep -Eiq '(^|[[:space:]])permissive([[:space:]]|$)' "$policy"; then
 	echo "policy must not contain a permissive declaration" >&2
 	exit 1
