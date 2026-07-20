@@ -106,6 +106,12 @@ grep -F \
 	'allow postfix_pipe_t salyut_bbsd_var_run_t:dir search;' "$policy" >/dev/null
 grep -F \
 	'allow postfix_pipe_t salyut_bbsd_var_run_t:sock_file write;' "$policy" >/dev/null
+grep -F 'SEMODULE ?= semodule' "$repo/Makefile" >/dev/null
+grep -F \
+	'if [ -z "$(DESTDIR)" ]; then \' "$repo/Makefile" >/dev/null
+grep -F \
+	'$(SEMODULE) -i "$(SELINUX_PACKAGE_DIR)/$(SELINUX_MODULE).pp"; \' \
+	"$repo/Makefile" >/dev/null
 if grep -Eiq '(^|[[:space:]])permissive([[:space:]]|$)' "$policy"; then
 	echo "policy must not contain a permissive declaration" >&2
 	exit 1

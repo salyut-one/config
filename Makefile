@@ -1,5 +1,6 @@
 CC ?= cc
 INSTALL ?= install
+SEMODULE ?= semodule
 PREFIX ?= /usr/local
 SYSCONFDIR ?= /etc
 MANDIR ?= $(PREFIX)/share/man
@@ -130,6 +131,9 @@ install-selinux: build-selinux install-selinux-dropins
 	$(INSTALL) -d "$(DESTDIR)$(SELINUX_PACKAGE_DIR)"
 	$(INSTALL) -m 0644 "$(SELINUX_PACKAGE)" \
 		"$(DESTDIR)$(SELINUX_PACKAGE_DIR)/$(SELINUX_MODULE).pp"
+	@if [ -z "$(DESTDIR)" ]; then \
+		$(SEMODULE) -i "$(SELINUX_PACKAGE_DIR)/$(SELINUX_MODULE).pp"; \
+	fi
 
 install-mail-config:
 	$(INSTALL) -d "$(DESTDIR)$(SYSCONFDIR)"
